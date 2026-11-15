@@ -42,6 +42,7 @@ npm run dev:client   # :5173  — 이것만으로도 로컬 모드 플레이 가
 - [컨셉 & 스택](docs/01-concept-and-stack.md)
 - [방 비트표](docs/02-combat-room-beats.md)
 - [프로토콜 v0](docs/03-protocol.md)
+- [스테이지 컨셉 백로그 (미구현)](docs/04-stage-concepts.md)
 
 ## 구조
 

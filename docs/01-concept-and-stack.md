@@ -232,8 +232,9 @@ Browser (Vite + Pixi)
 
 1. `02-combat-room-beats.md` — 일반/특수 방 초 단위 비트표 확정
 2. `03-protocol.md` — 메시지 스키마 v0
-3. `04-art-tier-pipeline.md` — 티어 아트 스펙
-4. 프로토타입 마일스톤 — **로비 없이 솔로 12방 던전 클리어**부터
+3. `04-stage-concepts.md` — 스테이지 타입 아이디어 (탄막/타이밍/제스처/연타) · **미구현**
+4. `05-art-tier-pipeline.md` — 티어 아트 스펙
+5. 프로토타입 마일스톤 — **로비 없이 솔로 12방 던전 클리어**부터
 
 ---
 
