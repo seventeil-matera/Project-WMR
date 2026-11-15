@@ -73,6 +73,10 @@
         color: var(--text);
         font-weight: 600;
       }
+      #connLabel {
+        color: var(--accent);
+        font-size: 12px;
+      }
       .hud {
         position: absolute;
         left: 20px;
@@ -208,6 +212,7 @@
       <div class="topbar">
         <div class="brand">WMR <span>SHORTS</span></div>
         <div class="meta">
+          <div id="connLabel">서버 연결 중…</div>
           <div id="roomLabel"><strong>대기</strong></div>
           <div id="tierLabel">티어 —</div>
           <div id="progressLabel">진행 0 / 13</div>
@@ -219,7 +224,8 @@
           <h1>쇼츠형 던전</h1>
           <p>
             일반 방 12개(약 10~15초) + 특수 몬스터 1.<br />
-            WASD 이동 · 자동 평타 · Q 범위 · E 돌진
+            WASD 이동 · 자동 평타 · Q 범위 · E 돌진<br />
+            서버가 없어도 <strong>로컬 모드</strong>로 바로 플레이됩니다.
           </p>
           <button id="startBtn" type="button">START RUN</button>
         </div>

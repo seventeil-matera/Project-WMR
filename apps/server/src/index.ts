@@ -19,6 +19,6 @@ wss.on("connection", (ws) => {
   ws.on("close", () => session.dispose());
 });
 
-server.listen(PORT, () => {
-  console.log(`[wmr-server] ws://localhost:${PORT}/ws`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`[wmr-server] ws://0.0.0.0:${PORT}/ws`);
 });

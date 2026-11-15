@@ -1,5 +1,6 @@
 import { TIER_LABELS, type ServerMessage } from "@wmr/shared";
 import { Input } from "./input";
+import { LocalSession } from "./localSession";
 import { NetClient } from "./net";
 import { WorldView } from "./worldView";
 
@@ -14,18 +15,25 @@ const hpFill = document.getElementById("hpFill")!;
 const toastEl = document.getElementById("toast")!;
 const banner = document.getElementById("banner")!;
 const startBtn = document.getElementById("startBtn") as HTMLButtonElement;
+const connLabel = document.getElementById("connLabel");
 
 const net = new NetClient();
+const local = new LocalSession();
 const input = new Input();
 let view: WorldView;
 let running = false;
+let mode: "net" | "local" = "local";
 let toastTimer = 0;
 
 function showToast(text: string) {
   toastEl.textContent = text;
   toastEl.classList.add("show");
   window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toastEl.classList.remove("show"), 1800);
+  toastTimer = window.setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+function setConnText(text: string) {
+  if (connLabel) connLabel.textContent = text;
 }
 
 function setBanner(
@@ -48,10 +56,10 @@ function hideBanner() {
   banner.style.display = "none";
 }
 
-function onServer(msg: ServerMessage) {
+function handleMessage(msg: ServerMessage) {
   switch (msg.type) {
     case "welcome":
-      showToast(`연결됨 · ${msg.playerId}`);
+      showToast(`서버 연결 · ${msg.playerId}`);
       break;
     case "toast":
       showToast(msg.text);
@@ -78,12 +86,12 @@ function onServer(msg: ServerMessage) {
             "CLEAR",
             `클리어 ${Math.round(ev.durationMs / 1000)}초 · ${TIER_LABELS[ev.tier]}`,
             "AGAIN",
-            () => net.restart(),
+            () => startRun(),
           );
         }
         if (ev.type === "run_fail") {
           running = false;
-          setBanner("DOWN", ev.reason, "RETRY", () => net.restart());
+          setBanner("DOWN", ev.reason, "RETRY", () => startRun());
         }
       }
       break;
@@ -91,21 +99,46 @@ function onServer(msg: ServerMessage) {
   }
 }
 
+function startRun() {
+  hideBanner();
+  if (net.online) {
+    mode = "net";
+    local.dispose();
+    net.startRun();
+    return;
+  }
+  mode = "local";
+  setConnText("로컬 모드 (서버 없음)");
+  local.start();
+}
+
 async function boot() {
   view = await WorldView.create(host);
-  net.onMessage = onServer;
+  net.onMessage = handleMessage;
+  local.onMessage = handleMessage;
+  net.onState = (state) => {
+    if (state === "online") {
+      setConnText("서버 연결됨");
+      showToast("서버 연결됨 — START로 시작");
+    } else if (state === "offline") {
+      setConnText("로컬 모드 사용 가능");
+      showToast("서버 없음 → 로컬 모드로 플레이 가능");
+    } else {
+      setConnText("서버 연결 중…");
+    }
+  };
   net.connect();
 
-  startBtn.addEventListener("click", () => {
-    hideBanner();
-    net.startRun();
-  });
+  startBtn.addEventListener("click", () => startRun());
 
-  // send input at ~30 Hz
   window.setInterval(() => {
     if (!running) return;
     const sample = input.sample();
-    net.sendInput(sample.dx, sample.dy, sample.skills);
+    if (mode === "net" && net.online) {
+      net.sendInput(sample.dx, sample.dy, sample.skills);
+    } else {
+      local.setInput(sample.dx, sample.dy, sample.skills);
+    }
   }, 1000 / 30);
 }
 
