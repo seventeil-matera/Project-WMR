@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>WMR — Shorts Dungeon Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+KR:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg0: #0b1020;
+        --bg1: #141c33;
+        --accent: #5ce1ff;
+        --warn: #ff6b6b;
+        --ok: #7CFC9A;
+        --text: #e8eefc;
+        --muted: #93a0bf;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background:
+          radial-gradient(1200px 600px at 20% -10%, #1b2a55 0%, transparent 55%),
+          radial-gradient(900px 500px at 90% 10%, #3a1d4e 0%, transparent 50%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        color: var(--text);
+        font-family: "Noto Sans KR", sans-serif;
+        overflow: hidden;
+      }
+      #ui {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+      }
+      #ui .panel {
+        pointer-events: auto;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 16px 20px;
+        gap: 12px;
+      }
+      .brand {
+        font-family: Orbitron, sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        font-size: 18px;
+      }
+      .brand span {
+        color: var(--accent);
+      }
+      .meta {
+        text-align: right;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .meta strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .hud {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 220px;
+      }
+      .hpbar {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+      .hpbar > i {
+        display: block;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, #ff6b6b, #ffd166);
+        transform-origin: left center;
+        transition: transform 80ms linear;
+      }
+      .skills {
+        display: flex;
+        gap: 8px;
+      }
+      .skill {
+        min-width: 56px;
+        padding: 8px 10px;
+        border: 1px solid rgba(92, 225, 255, 0.35);
+        background: rgba(10, 16, 32, 0.7);
+        font-size: 12px;
+        text-align: center;
+      }
+      .skill em {
+        display: block;
+        font-style: normal;
+        color: var(--accent);
+        font-family: Orbitron, sans-serif;
+        font-size: 14px;
+      }
+      .center {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+      }
+      .banner {
+        pointer-events: auto;
+        text-align: center;
+        padding: 28px 32px;
+        background: rgba(8, 12, 24, 0.82);
+        border: 1px solid rgba(92, 225, 255, 0.25);
+        backdrop-filter: blur(8px);
+        max-width: 420px;
+      }
+      .banner h1 {
+        margin: 0 0 8px;
+        font-family: Orbitron, sans-serif;
+        font-size: 22px;
+        letter-spacing: 0.06em;
+      }
+      .banner p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .banner button,
+      .ghost-btn {
+        pointer-events: auto;
+        cursor: pointer;
+        border: 0;
+        background: linear-gradient(90deg, #5ce1ff, #7b6cff);
+        color: #061018;
+        font-weight: 700;
+        font-family: Orbitron, sans-serif;
+        letter-spacing: 0.04em;
+        padding: 12px 18px;
+        font-size: 13px;
+      }
+      .ghost-btn {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-left: 8px;
+      }
+      .toast {
+        position: absolute;
+        top: 72px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 14px;
+        background: rgba(0, 0, 0, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 13px;
+        opacity: 0;
+        transition: opacity 160ms ease;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+      .help {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        font-size: 12px;
+        color: var(--muted);
+        text-align: right;
+        line-height: 1.5;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 1;
+      }
+      #app canvas {
+        width: min(100vw, 960px);
+        height: auto;
+        max-height: 100vh;
+        image-rendering: auto;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="ui">
+      <div class="topbar">
+        <div class="brand">WMR <span>SHORTS</span></div>
+        <div class="meta">
+          <div id="roomLabel"><strong>대기</strong></div>
+          <div id="tierLabel">티어 —</div>
+          <div id="progressLabel">진행 0 / 13</div>
+        </div>
+      </div>
+      <div id="toast" class="toast"></div>
+      <div class="center">
+        <div id="banner" class="banner panel">
+          <h1>쇼츠형 던전</h1>
+          <p>
+            일반 방 12개(약 10~15초) + 특수 몬스터 1.<br />
+            WASD 이동 · 자동 평타 · Q 범위 · E 돌진
+          </p>
+          <button id="startBtn" type="button">START RUN</button>
+        </div>
+      </div>
+      <div class="hud">
+        <div class="hpbar"><i id="hpFill"></i></div>
+        <div class="skills">
+          <div class="skill"><em>ATK</em>자동</div>
+          <div class="skill"><em>Q</em>참격</div>
+          <div class="skill"><em>E</em>돌진</div>
+        </div>
+      </div>
+      <div class="help">
+        서버 권위 프로토타입<br />
+        체크포인트: 사망 시 재시작
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

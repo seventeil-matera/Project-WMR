@@ -234,3 +234,12 @@ Browser (Vite + Pixi)
 2. `03-protocol.md` — 메시지 스키마 v0
 3. `04-art-tier-pipeline.md` — 티어 아트 스펙
 4. 프로토타입 마일스톤 — **로비 없이 솔로 12방 던전 클리어**부터
+
+---
+
+## 13. 프로토타입 현황 (구현됨)
+
+- `apps/client` + `apps/server` + `packages/shared` 모노레포
+- 솔로 권위 시뮬: 일반 12 + 특수 1, 티어 T1~T4, Q/E/자동평타
+- 실행: `npm install && npm run build -w @wmr/shared && npm run dev:server` / `npm run dev:client`
+- 스모크: 서버 켠 뒤 `npm run smoke` (헤드리스 풀클리어)
