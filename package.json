@@ -1,0 +1,16 @@
+{
+  "name": "project-wmr",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @wmr/server & npm run dev -w @wmr/client",
+    "dev:client": "npm run dev -w @wmr/client",
+    "dev:server": "npm run dev -w @wmr/server",
+    "build": "npm run build -w @wmr/shared && npm run build -w @wmr/server && npm run build -w @wmr/client",
+    "typecheck": "npm run typecheck -w @wmr/shared && npm run typecheck -w @wmr/server && npm run typecheck -w @wmr/client",
+    "smoke": "node apps/server/scripts/smoke-run.mjs"
+  }
+}
